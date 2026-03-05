@@ -172,7 +172,7 @@ def load_models():
 
     # Download Random Forest model if not present
     if not os.path.exists("random_forest_model.pkl"):
-        url = "https://drive.google.com/file/d/18UBWbwsg4lAB1IneBJ-mv--64S_K9ooO/view?usp=drive_link"
+        url = "https://drive.google.com/uc?id=18UBWbwsg41AB1IneBJ-mv..."
         gdown.download(url, "random_forest_model.pkl", quiet=False)
 
     rf = pickle.load(open('random_forest_model.pkl', 'rb'))
