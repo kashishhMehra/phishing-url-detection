@@ -173,7 +173,7 @@ def load_models():
     # Download Random Forest model if not present
     if not os.path.exists("random_forest_model.pkl"):
         url = "https://drive.google.com/uc?id=18UBWbwsg41AB1IneBJ-mv..."
-        gdown.download(url, "random_forest_model.pkl", quiet=False)
+        gdown.download(url, "random_forest_model.pkl", quiet=False, fuzzy = True)
 
     rf = pickle.load(open('random_forest_model.pkl', 'rb'))
     lr = pickle.load(open('logistic_regression_model.pkl', 'rb'))
