@@ -164,26 +164,25 @@ footer, #MainMenu, header { visibility: hidden; }
 
 # ── LOAD MODELS ──
 # --- LOAD MODELS ---
+import requests
 import os
-import gdown
 
 @st.cache_resource
 def load_models():
 
-    # Download Random Forest model if not present
     if not os.path.exists("random_forest_model.pkl"):
-        url = "https://drive.google.com/uc?id=18UBWbwsg41AB1IneBJ-mv..."
-        gdown.download(url, "random_forest_model.pkl", quiet=False, fuzzy = True)
+        url = "https://huggingface.co/kashish56/phishing-url-rf-model/resolve/main/random_forest_model.pkl"
+        r = requests.get(url, timeout=60)
 
-    rf = pickle.load(open('random_forest_model.pkl', 'rb'))
-    lr = pickle.load(open('logistic_regression_model.pkl', 'rb'))
-    sc = pickle.load(open('scaler.pkl', 'rb'))
-    feats = pickle.load(open('feature_names.pkl', 'rb'))
+        with open("random_forest_model.pkl", "wb") as f:
+            f.write(r.content)
+
+    rf = pickle.load(open("random_forest_model.pkl", "rb"))
+    lr = pickle.load(open("logistic_regression_model.pkl", "rb"))
+    sc = pickle.load(open("scaler.pkl", "rb"))
+    feats = pickle.load(open("feature_names.pkl", "rb"))
 
     return rf, lr, sc, feats
-
-
-rf, lr, scaler, feature_names = load_models()
 
 # ── FEATURE EXTRACTION ──
 from urllib.parse import urlparse
