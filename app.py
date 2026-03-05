@@ -288,7 +288,7 @@ if analyze and url_input.strip():
 
 
 # Results centered
-
+rf_pred = rf.predict(features)[0]
 col1, col2, col3 = st.columns([1,2,1])
 
 with col2:
