@@ -1,5 +1,1 @@
-*.pkl
-phishing_env/
-random_forest_model.pkl
-__pycache__/
-*.pyc
+
