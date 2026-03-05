@@ -169,9 +169,7 @@ import os
 @st.cache_resource
 def load_models():
 
-    # delete corrupted file if it exists
-    if os.path.exists("random_forest_model.pkl"):
-        os.remove("random_forest_model.pkl")
+ if not os.path.exists("random_forest_model.pkl"):
         url = "https://huggingface.co/kashish56/phishing-url-rf-model/resolve/main/random_forest_model.pkl"
         r = requests.get(url, stream=True)
 
