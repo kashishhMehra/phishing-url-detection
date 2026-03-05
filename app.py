@@ -162,7 +162,6 @@ footer, #MainMenu, header { visibility: hidden; }
 """, unsafe_allow_html=True)
 
 
-# ── LOAD MODELS ──
 # --- LOAD MODELS ---
 import requests
 import os
@@ -183,7 +182,7 @@ def load_models():
     feats = pickle.load(open("feature_names.pkl", "rb"))
 
     return rf, lr, sc, feats
-
+rf, lr, scaler, feature_names = load_models()
 # ── FEATURE EXTRACTION ──
 from urllib.parse import urlparse
 
@@ -288,14 +287,15 @@ if analyze and url_input.strip():
 
 
 # Results centered
-rf_pred = rf.predict(features)[0]
-col1, col2, col3 = st.columns([1,2,1])
+if analyze and url_input.strip():
+    rf_pred = rf.predict(features_df)[0]
+    col1, col2, col3 = st.columns([1,2,1])
 
-with col2:
-    if rf_pred == 1:
-        st.markdown(f'<div class="result-bad"><div class="result-title" style="color:#fc8181">⚠ Phishing</div><div class="result-sub">Random Forest · {rf_prob[1]*100:.1f}% confidence</div></div>', unsafe_allow_html=True)
-    else:
-        st.markdown(f'<div class="result-good"><div class="result-title" style="color:#4ade80">✓ Safe</div><div class="result-sub">Random Forest · {rf_prob[0]*100:.1f}% confidence</div></div>', unsafe_allow_html=True)
+    with col2:
+        if rf_pred == 1:
+            st.markdown(f'<div class="result-bad"><div class="result-title" style="color:#fc8181">⚠ Phishing</div><div class="result-sub">Random Forest · {rf_prob[1]*100:.1f}% confidence</div></div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="result-good"><div class="result-title" style="color:#4ade80">✓ Safe</div><div class="result-sub">Random Forest · {rf_prob[0]*100:.1f}% confidence</div></div>', unsafe_allow_html=True)
 
 
     # XAI
