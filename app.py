@@ -172,17 +172,15 @@ def load_models():
     if not os.path.exists("random_forest_model.pkl"):
         url = "https://huggingface.co/kashish56/phishing-url-rf-model/resolve/main/random_forest_model.pkl"
         r = requests.get(url, stream=True)
+        with open("random_forest_model.pkl", "wb") as f: 
+            for chunk in r.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
 
-    with open("random_forest_model.pkl", "wb") as f:
-        for chunk in r.iter_content(chunk_size=8192):
-            if chunk:
-                f.write(chunk)
-
-    rf = pickle.load(open("random_forest_model.pkl", "rb"))
-    lr = pickle.load(open("logistic_regression_model.pkl", "rb"))
-    sc = pickle.load(open("scaler.pkl", "rb"))
+    rf    = pickle.load(open("random_forest_model.pkl", "rb"))
+    lr    = pickle.load(open("logistic_regression_model.pkl", "rb"))
+    sc    = pickle.load(open("scaler.pkl", "rb"))
     feats = pickle.load(open("feature_names.pkl", "rb"))
-
 
     return rf, lr, sc, feats
 rf, lr, scaler, feature_names = load_models()
