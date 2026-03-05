@@ -32,6 +32,8 @@ st.markdown("""
     padding: 5rem 3rem 3rem !important;
     max-width: 960px !important;
 }
+
+/* Title */
 .title {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 2.4rem;
@@ -41,15 +43,8 @@ st.markdown("""
     text-align: center;
 }
 .title span { color: #4ade80; }
-@media (max-width: 768px) {
-    .block-container { padding: 3rem 1rem 2rem !important; }
-    .title { font-size: 1.5rem !important; }
-    .cards-row { grid-template-columns: 1fr !important; }
-    .card { padding: 1.2rem !important; }
-    div[data-testid="stTextInput"] input { font-size: 0.9rem !important; padding: 0.7rem 0.8rem !important; }
-    .stButton > button { font-size: 0.9rem !important; padding: 0.7rem !important; }
-    .result-title { font-size: 1.1rem !important; }
-}
+
+/* Input */
 div[data-testid="stTextInput"] input {
     background-color: #1e2433 !important;
     border: 1px solid #2d3748 !important;
@@ -63,7 +58,11 @@ div[data-testid="stTextInput"] input:focus {
     border-color: #4ade80 !important;
     box-shadow: none !important;
 }
-div[data-testid="stTextInput"] input::placeholder { color: #4a5568 !important; }
+div[data-testid="stTextInput"] input::placeholder {
+    color: #4a5568 !important;
+}
+
+/* Button */
 .stButton > button {
     background-color: transparent !important;
     color: #e2e8f0 !important;
@@ -80,6 +79,8 @@ div[data-testid="stTextInput"] input::placeholder { color: #4a5568 !important; }
     border-color: #4ade80 !important;
     color: #4ade80 !important;
 }
+
+/* Result */
 .result-bad {
     background: #1a0e0e;
     border: 1px solid #fc8181;
@@ -102,6 +103,8 @@ div[data-testid="stTextInput"] input::placeholder { color: #4a5568 !important; }
     font-weight: 600;
 }
 .result-sub { font-size: 0.82rem; color: #94a3b8; margin-top: 0.4rem; }
+
+/* Cards */
 .cards-row {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -123,7 +126,15 @@ div[data-testid="stTextInput"] input::placeholder { color: #4a5568 !important; }
     font-weight: 600;
 }
 .card-body { font-size: 0.95rem; color: #94a3b8; line-height: 1.8; }
-.divider { border: none; border-top: 1px solid #2d3748; margin: 2rem 0; }
+
+/* Divider */
+.divider {
+    border: none;
+    border-top: 1px solid #2d3748;
+    margin: 2rem 0;
+}
+
+/* XAI section */
 .xai-label {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.72rem;
@@ -132,6 +143,8 @@ div[data-testid="stTextInput"] input::placeholder { color: #4a5568 !important; }
     text-transform: uppercase;
     margin-bottom: 0.5rem;
 }
+
+/* Tabs */
 .stTabs [data-baseweb="tab-list"] {
     background: transparent !important;
     border-bottom: 1px solid #2d3748 !important;
@@ -143,12 +156,24 @@ div[data-testid="stTextInput"] input::placeholder { color: #4a5568 !important; }
     background: transparent !important;
 }
 .stTabs [aria-selected="true"] { color: #4ade80 !important; }
+
 footer, #MainMenu, header { visibility: hidden; }
+            
+@media (max-width: 768px) {
+    .block-container { padding: 3rem 1rem 2rem !important; }
+    .title { font-size: 1.5rem !important; }
+    .cards-row { grid-template-columns: 1fr !important; }
+    .card { padding: 1.2rem !important; }
+    div[data-testid="stTextInput"] input { font-size: 0.9rem !important; padding: 0.7rem 0.8rem !important; }
+    .stButton > button { font-size: 0.9rem !important; padding: 0.7rem !important; }
+    .result-title { font-size: 1.1rem !important; }
+}
 </style>
 """, unsafe_allow_html=True)
 
 
-# ── LOAD MODELS ──
+# --- LOAD MODELS ---
+
 @st.cache_resource
 def load_models():
     rf    = pickle.load(open("random_forest_model.pkl", "rb"))
@@ -156,10 +181,10 @@ def load_models():
     sc    = pickle.load(open("scaler.pkl", "rb"))
     feats = pickle.load(open("feature_names.pkl", "rb"))
     return rf, lr, sc, feats
-
 rf, lr, scaler, feature_names = load_models()
+# ── FEATURE EXTRACTION ──
+from urllib.parse import urlparse
 
-# ── TRUSTED DOMAINS ──
 TRUSTED_DOMAINS = [
     'google.com', 'facebook.com', 'youtube.com', 'twitter.com',
     'linkedin.com', 'instagram.com', 'microsoft.com', 'apple.com',
@@ -170,15 +195,16 @@ TRUSTED_DOMAINS = [
     'outlook.com', 'gmail.com', 'icloud.com', 'stackoverflow.com'
 ]
 
-# ── FEATURE EXTRACTION ──
 def extract_features(url):
     try:
         parsed = urlparse(url if url.startswith('http') else 'http://' + url)
         domain = parsed.netloc.lower().replace('www.', '')
     except:
         domain = ''
+
     is_trusted = 1 if any(domain == td or domain.endswith('.' + td)
                           for td in TRUSTED_DOMAINS) else 0
+
     return pd.DataFrame([{
         'url_length'           : len(url),
         'num_dots'             : url.count('.'),
@@ -199,7 +225,6 @@ def extract_features(url):
                                     'banking','confirm','paypal','ebay']) else 0,
         'is_trusted_domain'    : is_trusted,
     }])
-
 
 # ── UI ──
 st.markdown('<div class="title"> 🛡️ Phishing URL <span>Detector</span></div>', unsafe_allow_html=True)
@@ -246,11 +271,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ── ANALYSIS — everything inside one if block ──
-if analyze and not url_input.strip():
-    st.warning("Please paste a URL first.")
-
-elif analyze and url_input.strip():
+# ── ANALYSIS ──
+if analyze and url_input.strip():
     url         = url_input.strip()
     features_df = extract_features(url)
     scaled      = scaler.transform(features_df)
@@ -262,15 +284,20 @@ elif analyze and url_input.strip():
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-    # Result
-    col1, col2, col3 = st.columns([1, 2, 1])
+
+# Results centered
+if analyze and url_input.strip():
+    rf_pred = rf.predict(features_df)[0]
+    col1, col2, col3 = st.columns([1,2,1])
+
     with col2:
         if rf_pred == 1:
             st.markdown(f'<div class="result-bad"><div class="result-title" style="color:#fc8181">⚠ Phishing</div><div class="result-sub">Random Forest · {rf_prob[1]*100:.1f}% confidence</div></div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div class="result-good"><div class="result-title" style="color:#4ade80">✓ Safe</div><div class="result-sub">Random Forest · {rf_prob[0]*100:.1f}% confidence</div></div>', unsafe_allow_html=True)
 
-    # XAI — inside the elif block
+
+    # XAI
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
     st.markdown('<div class="xai-label">// Explainability</div>', unsafe_allow_html=True)
 
@@ -295,6 +322,7 @@ elif analyze and url_input.strip():
             plt.close()
         except Exception as e:
             st.error(f"SHAP error: {e}")
+
 
     with tab_lime:
         try:
@@ -331,7 +359,9 @@ elif analyze and url_input.strip():
         except Exception as e:
             st.error(f"LIME error: {e}")
 
+if analyze and not url_input.strip():
+    st.warning("Please paste a URL first.")
+
 # ── FOOTER ──
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown('<p style="text-align:center; color:#2d3748; font-size:0.75rem; font-family: IBM Plex Mono, monospace">Built with Random Forest · Logistic Regression · SHAP · LIME</p>', unsafe_allow_html=True)
-git
