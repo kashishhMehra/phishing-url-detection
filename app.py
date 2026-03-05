@@ -288,12 +288,12 @@ if analyze and url_input.strip():
 
 
     # XAI
-st.markdown('<hr class="divider">', unsafe_allow_html=True)
-st.markdown('<div class="xai-label">// Explainability</div>', unsafe_allow_html=True)
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+    st.markdown('<div class="xai-label">// Explainability</div>', unsafe_allow_html=True)
 
-tab_shap, tab_lime = st.tabs(["SHAP", "LIME"])
+    tab_shap, tab_lime = st.tabs(["SHAP", "LIME"])
 
-with tab_shap:
+    with tab_shap:
         try:
             explainer = shap.LinearExplainer(lr, scaled, feature_perturbation="interventional")
             shap_vals = explainer.shap_values(scaled)[0]
@@ -313,7 +313,8 @@ with tab_shap:
         except Exception as e:
             st.error(f"SHAP error: {e}")
 
-with tab_lime:
+
+    with tab_lime:
         try:
             np.random.seed(42)
             n  = 200
