@@ -171,8 +171,9 @@ def load_models():
 
     if not os.path.exists("random_forest_model.pkl"):
         url = "https://huggingface.co/kashish56/phishing-url-rf-model/resolve/main/random_forest_model.pkl"
-        r = requests.get(url, stream=True)
-        with open("random_forest_model.pkl", "wb") as f: 
+        r = requests.get(url, stream=True, timeout=120)
+        r.raise_for_status()  # ← catch bad responses early
+        with open("random_forest_model.pkl", "wb") as f:
             for chunk in r.iter_content(chunk_size=8192):
                 if chunk:
                     f.write(chunk)
